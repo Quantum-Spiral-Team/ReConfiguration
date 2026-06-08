@@ -1,4 +1,4 @@
-package com.qsteam.hoconium.proxy;
+package com.qsteam.reconf.proxy;
 
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
