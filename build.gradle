@@ -120,7 +120,7 @@ sourceSets {
                 property('mod_dependencies', mod_dependencies)
                 property('client_proxy_class', "${root_package}.${mod_id}.proxy.ClientProxy")
                 property('server_proxy_class', "${root_package}.${mod_id}.proxy.CommonProxy")
-                property('asm_transformer_class', "${root_package}.${mod_id}.core.HoconiumASMTransformer")
+                property('asm_transformer_class', "${root_package}.${mod_id}.core.ReConfASMTransformer")
             }
             resources {
                 property('mod_id', mod_id)
