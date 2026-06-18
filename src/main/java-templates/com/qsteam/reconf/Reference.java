@@ -12,5 +12,4 @@ public class Reference {
     public static final String DEPENDENCIES = "{{ mod_dependencies }}";
     public static final String CLIENT_PROXY_CLASS = "{{ client_proxy_class }}";
     public static final String SERVER_PROXY_CLASS = "{{ server_proxy_class }}";
-    public static final String ASM_TRANSFORMER_CLASS = "{{ asm_transformer_class }}";
 }

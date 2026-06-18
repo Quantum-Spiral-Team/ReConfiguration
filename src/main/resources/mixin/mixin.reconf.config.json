@@ -6,9 +6,7 @@
   "minVersion": "0.8.5",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "MixinConfig",
-    "MixinConfigManager",
-    "MixinLoader"
+    "MixinConfigManager"
   ],
   "server": [],
   "client": []

@@ -1,11 +1,11 @@
-package com.qsteam.reconf.core;
+package com.qsteam.reconf.core.transformer;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
-public class ReConfASMTransformer implements IClassTransformer {
+public class InjectInitTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
@@ -18,7 +18,7 @@ public class ReConfASMTransformer implements IClassTransformer {
 
             if (node.visibleAnnotations != null) {
                 for (AnnotationNode annotation : node.visibleAnnotations) {
-                    if ("L".equals(annotation.desc)) { //TODO add annotation desc
+                    if ("Lcom/qsteam/reconf/config/ReConfig;".equals(annotation.desc)) {
                         return injectInit(node, reader, basicClass);
                     }
                 }
