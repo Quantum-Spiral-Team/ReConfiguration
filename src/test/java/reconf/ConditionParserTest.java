@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.util.function.Predicate;
+import java.util.function.DoublePredicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +20,7 @@ class ConditionParserTest {
             "10.0, false"
     })
     void openInterval(double value, boolean expected) {
-        Predicate<Double> p = ConditionParser.parse("(1..10)");
+        DoublePredicate p = ConditionParser.parse("(1..10)");
         assertEquals(expected, p.test(value));
     }
 
@@ -32,7 +32,7 @@ class ConditionParserTest {
             "10.1, false"
     })
     void closedInterval(double value, boolean expected) {
-        Predicate<Double> p = ConditionParser.parse("[1..10]");
+        DoublePredicate p = ConditionParser.parse("[1..10]");
         assertEquals(expected, p.test(value));
     }
 
@@ -43,7 +43,7 @@ class ConditionParserTest {
             "10.0, true"
     })
     void mixedIntervalExclusiveLowInclusiveHigh(double value, boolean expected) {
-        Predicate<Double> p = ConditionParser.parse("(1..10]");
+        DoublePredicate p = ConditionParser.parse("(1..10]");
         assertEquals(expected, p.test(value));
     }
 
@@ -53,7 +53,7 @@ class ConditionParserTest {
             "10.0, false"
     })
     void mixedIntervalInclusiveLowExclusiveHigh(double value, boolean expected) {
-        Predicate<Double> p = ConditionParser.parse("[1..10)");
+        DoublePredicate p = ConditionParser.parse("[1..10)");
         assertEquals(expected, p.test(value));
     }
 
@@ -66,7 +66,7 @@ class ConditionParserTest {
             "85.1,    false"
     })
     void unboundedBelow(double value, boolean expected) {
-        Predicate<Double> p = ConditionParser.parse("(..85]");
+        DoublePredicate p = ConditionParser.parse("(..85]");
         assertEquals(expected, p.test(value));
     }
 
@@ -77,13 +77,13 @@ class ConditionParserTest {
             "100000, true"
     })
     void unboundedAbove(double value, boolean expected) {
-        Predicate<Double> p = ConditionParser.parse("[100..)");
+        DoublePredicate p = ConditionParser.parse("[100..)");
         assertEquals(expected, p.test(value));
     }
 
     @Test
     void fullyUnboundedMatchesEverything() {
-        Predicate<Double> p = ConditionParser.parse("(..)");
+        DoublePredicate p = ConditionParser.parse("(..)");
         assertTrue(p.test(-1_000_000.0));
         assertTrue(p.test(0.0));
         assertTrue(p.test(1_000_000.0));
@@ -93,7 +93,7 @@ class ConditionParserTest {
 
     @Test
     void setMatchesExactValueOnly() {
-        Predicate<Double> p = ConditionParser.parse("{5}");
+        DoublePredicate p = ConditionParser.parse("{5}");
         assertTrue(p.test(5.0));
         assertFalse(p.test(5.0001));
         assertFalse(p.test(4.9999));
@@ -115,13 +115,13 @@ class ConditionParserTest {
             "7,  false"
     })
     void setMatchesAnyOfMultipleValues(double value, boolean expected) {
-        Predicate<Double> p = ConditionParser.parse("{2, 4, 5, 6}");
+        DoublePredicate p = ConditionParser.parse("{2, 4, 5, 6}");
         assertEquals(expected, p.test(value));
     }
 
     @Test
     void setWithMultipleValuesSupportsNegativesAndDecimals() {
-        Predicate<Double> p = ConditionParser.parse("{-1.5, 0, 2.25}");
+        DoublePredicate p = ConditionParser.parse("{-1.5, 0, 2.25}");
         assertTrue(p.test(-1.5));
         assertTrue(p.test(0.0));
         assertTrue(p.test(2.25));
@@ -130,8 +130,8 @@ class ConditionParserTest {
 
     @Test
     void setIgnoresWhitespaceAroundCommas() {
-        Predicate<Double> compact = ConditionParser.parse("{2,4,5,6}");
-        Predicate<Double> spaced = ConditionParser.parse("{ 2 ,  4,5 ,   6 }");
+        DoublePredicate compact = ConditionParser.parse("{2,4,5,6}");
+        DoublePredicate spaced = ConditionParser.parse("{ 2 ,  4,5 ,   6 }");
         for (double v : new double[]{2, 3, 4, 5, 6, 7}) {
             assertEquals(compact.test(v), spaced.test(v), "Mismatch at value=" + v);
         }
@@ -139,7 +139,7 @@ class ConditionParserTest {
 
     @Test
     void setWithDuplicateValuesStillWorks() {
-        Predicate<Double> p = ConditionParser.parse("{1, 1, 2}");
+        DoublePredicate p = ConditionParser.parse("{1, 1, 2}");
         assertTrue(p.test(1.0));
         assertTrue(p.test(2.0));
         assertFalse(p.test(3.0));
@@ -147,7 +147,7 @@ class ConditionParserTest {
 
     @Test
     void multiValueSetCombinesWithOtherOperators() {
-        Predicate<Double> p = ConditionParser.parse("{2, 4, 6} & !{4}");
+        DoublePredicate p = ConditionParser.parse("{2, 4, 6} & !{4}");
         assertTrue(p.test(2.0));
         assertFalse(p.test(4.0));
         assertTrue(p.test(6.0));
@@ -178,7 +178,7 @@ class ConditionParserTest {
             "150, true"
     })
     void combinedExample(double value, boolean expected) {
-        Predicate<Double> p = ConditionParser.parse("(..85] & !{5} | [100..)");
+        DoublePredicate p = ConditionParser.parse("(..85] & !{5} | [100..)");
         assertEquals(expected, p.test(value));
     }
 
@@ -186,8 +186,8 @@ class ConditionParserTest {
 
     @Test
     void whitespaceIsIgnoredEverywhere() {
-        Predicate<Double> compact = ConditionParser.parse("(..85]&!{5}|[100..)");
-        Predicate<Double> spaced = ConditionParser.parse(
+        DoublePredicate compact = ConditionParser.parse("(..85]&!{5}|[100..)");
+        DoublePredicate spaced = ConditionParser.parse(
                 "  ( .. 85 ]   &   ! { 5 }   |   [ 100 .. )  ");
         for (double v : new double[]{5, 50, 85, 86, 100, 150}) {
             assertEquals(compact.test(v), spaced.test(v),
@@ -199,7 +199,7 @@ class ConditionParserTest {
 
     @Test
     void negativeAndDecimalBounds() {
-        Predicate<Double> p = ConditionParser.parse("[-10.5..-1.25]");
+        DoublePredicate p = ConditionParser.parse("[-10.5..-1.25]");
         assertTrue(p.test(-10.5));
         assertTrue(p.test(-5.0));
         assertTrue(p.test(-1.25));

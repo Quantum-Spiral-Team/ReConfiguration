@@ -1,20 +1,20 @@
 package com.qsteam.reconf.util;
 
 import it.unimi.dsi.fastutil.doubles.DoubleOpenHashSet;
+import it.unimi.dsi.fastutil.doubles.DoublePredicate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Parses a compact textual mini-language describing numeric ranges and
  * set-membership checks, combined with boolean operators, into a single
- * {@link Predicate}{@code <Double>} that can be evaluated against a value.
+ * {@link DoublePredicate}{@code <Double>} that can be evaluated against a value.
  *
  * <p>This is effectively a tiny "compiler": the expression is parsed once
- * into a tree of composed {@link Predicate} lambdas, and the resulting
+ * into a tree of composed {@link DoublePredicate} lambdas, and the resulting
  * predicate can then be evaluated repeatedly with no further string
  * processing, regex matching, or tokenizing involved.
  *
@@ -58,7 +58,7 @@ import java.util.regex.Pattern;
  * token stream and current parsing position), but {@link #parse(String)}
  * creates a fresh instance per call and exposes no shared mutable state,
  * so it is safe to call concurrently from multiple threads. The
- * {@link Predicate} returned by {@link #parse(String)} is itself
+ * {@link DoublePredicate} returned by {@link #parse(String)} is itself
  * stateless and thread-safe to evaluate concurrently.
  */
 public class ConditionParser {
@@ -167,7 +167,7 @@ public class ConditionParser {
 
     /**
      * Parses the given condition expression and compiles it into a
-     * {@link Predicate}. The expression is scanned exactly once; the
+     * {@link DoublePredicate}. The expression is scanned exactly once; the
      * returned predicate performs no further string parsing and can be
      * evaluated repeatedly at native comparison speed.
      *
@@ -179,9 +179,9 @@ public class ConditionParser {
      *         a number that cannot be parsed (note that {@link NumberFormatException}
      *         is itself a subclass of {@code IllegalArgumentException})
      */
-    public static Predicate<Double> parse(String expr) {
+    public static DoublePredicate parse(String expr) {
         ConditionParser parser = new ConditionParser(expr);
-        Predicate<Double> result = parser.parseExpr();
+        DoublePredicate result = parser.parseExpr();
         if (!parser.check(TokenType.EOF)) {
             throw new IllegalArgumentException("Unexpected trailing characters after: " + parser.peek());
         }
@@ -299,8 +299,8 @@ public class ConditionParser {
      * Parses an expression.
      * Grammar: {@code expr = term { '|' term }}
      */
-    private Predicate<Double> parseExpr() {
-        Predicate<Double> left = parseTerm();
+    private DoublePredicate parseExpr() {
+        DoublePredicate left = parseTerm();
         while (check(TokenType.OR)) {
             advance();
             left = left.or(parseTerm());
@@ -312,8 +312,8 @@ public class ConditionParser {
      * Parses a term.
      * Grammar: {@code term = factor { '&' factor }}
      */
-    private Predicate<Double> parseTerm() {
-        Predicate<Double> left = parseFactor();
+    private DoublePredicate parseTerm() {
+        DoublePredicate left = parseFactor();
         while (check(TokenType.AND)) {
             advance();
             left = left.and(parseFactor());
@@ -328,14 +328,14 @@ public class ConditionParser {
      *
      * @throws IllegalArgumentException if a {@code '('} is not matched by a closing {@code ')'}
      */
-    private Predicate<Double> parseFactor() {
+    private DoublePredicate parseFactor() {
         if (check(TokenType.NOT)) {
             advance();
             return parseFactor().negate();
         }
         if (check(TokenType.LPAREN)) {
             advance();
-            Predicate<Double> inner = parseExpr();
+            DoublePredicate inner = parseExpr();
             if (!check(TokenType.RPAREN)) {
                 throw new IllegalArgumentException("Expected closing ')'");
             }
@@ -352,13 +352,13 @@ public class ConditionParser {
      *
      * @throws IllegalArgumentException if the current token is neither an interval nor a set
      */
-    private Predicate<Double> parseAtom() {
+    private DoublePredicate parseAtom() {
         Token t = advance();
         return switch (t.type()) {
             case INTERVAL -> parseInterval(t);
             case SET -> parseSet(t);
             default -> throw new IllegalArgumentException(
-                    "Ожидался интервал или множество, получено: " + t);
+                    "\"Expected an interval or a set literal, got: " + t);
         };
     }
 
@@ -369,7 +369,7 @@ public class ConditionParser {
      * ({@code null}) as {@link Double#NEGATIVE_INFINITY} /
      * {@link Double#POSITIVE_INFINITY} respectively.
      */
-    private Predicate<Double> parseInterval(Token t) {
+    private DoublePredicate parseInterval(Token t) {
         boolean lowerInclusive = t.text().startsWith("[");
         boolean upperInclusive = t.text().endsWith("]");
         double low = t.value1() == null ? Double.NEGATIVE_INFINITY : t.value1();
@@ -388,8 +388,7 @@ public class ConditionParser {
      * matter in practice: {@code NaN} is considered equal to itself, and
      * {@code -0.0} is considered distinct from {@code 0.0}.
      */
-    @SuppressWarnings("deprecation")
-    private Predicate<Double> parseSet(Token t) {
+    private DoublePredicate parseSet(Token t) {
         DoubleOpenHashSet values = t.values();
         return values::contains;
     }
