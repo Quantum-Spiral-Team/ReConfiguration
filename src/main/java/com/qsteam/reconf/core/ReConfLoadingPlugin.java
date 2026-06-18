@@ -1,6 +1,5 @@
 package com.qsteam.reconf.core;
 
-import com.qsteam.reconf.core.transformer.AnnotationReplacerTransformer;
 import com.qsteam.reconf.core.transformer.InjectInitTransformer;
 import com.qsteam.reconf.util.LogUtil;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
