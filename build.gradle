@@ -100,6 +100,7 @@ dependencies {
     if (enable_junit_testing.toBoolean()) {
         testImplementation 'org.junit.jupiter:junit-jupiter:6.0.3'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        testImplementation 'it.unimi.dsi:fastutil:8.5.18'
     }
 }
 
@@ -120,7 +121,6 @@ sourceSets {
                 property('mod_dependencies', mod_dependencies)
                 property('client_proxy_class', "${root_package}.${mod_id}.proxy.ClientProxy")
                 property('server_proxy_class', "${root_package}.${mod_id}.proxy.CommonProxy")
-                property('asm_transformer_class', "${root_package}.${mod_id}.core.ReConfASMTransformer")
             }
             resources {
                 property('mod_id', mod_id)
