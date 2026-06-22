@@ -83,9 +83,9 @@ Resolve these before/while implementing the relevant section — they change the
 
 - [x] Create the numeric `ConditionParser` largely as: intervals (`(a..b)`, `[a..b]`, half-open variants, unbounded sides), set literals (`{n1, n2, ...}`), `&`/`|`/`!` operators, parenthesized grouping, recursive-descent compile-to-predicate
 - [ ] Wire it up to the `@Range(String)` annotation (currently a stub/TODO in `ReConfig`) so range strings actually validate values
-- [ ] Build a String-flavored ConditionParser variant
-  - [ ] Grammar: whitelist / blacklist entries + `!` negation (no interval syntax — strings have no `..` notion)
-  - [ ] Reuse the same tokenizer / recursive-descent / compiled-predicate architecture as the numeric parser instead of writing a second parser from scratch
+- [x] Build a String-flavored ConditionParser variant
+  - [x] Grammar: whitelist / blacklist entries + `!` negation (no interval syntax — strings have no `..` notion)
+  - [x] Reuse the same tokenizer / recursive-descent / compiled-predicate architecture as the numeric parser instead of writing a second parser from scratch
 - [ ] Reuse the String condition engine to drive validation for `Enum` and `UUID` fields (whitelist/blacklist of allowed values) instead of writing bespoke validators per type
 
 ## 7. GUI

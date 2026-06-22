@@ -1,6 +1,6 @@
-package reconf;
+package reconf.condition;
 
-import com.qsteam.reconf.util.ConditionParser;
+import com.qsteam.reconf.util.condition.NumericConditionParser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -9,7 +9,7 @@ import java.util.function.DoublePredicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ConditionParserTest {
+class NumericConditionParserTest {
 
     @ParameterizedTest
     @CsvSource({
@@ -20,7 +20,7 @@ class ConditionParserTest {
             "10.0, false"
     })
     void openInterval(double value, boolean expected) {
-        DoublePredicate p = ConditionParser.parse("(1..10)");
+        DoublePredicate p = NumericConditionParser.parse("(1..10)");
         assertEquals(expected, p.test(value));
     }
 
@@ -32,7 +32,7 @@ class ConditionParserTest {
             "10.1, false"
     })
     void closedInterval(double value, boolean expected) {
-        DoublePredicate p = ConditionParser.parse("[1..10]");
+        DoublePredicate p = NumericConditionParser.parse("[1..10]");
         assertEquals(expected, p.test(value));
     }
 
@@ -43,7 +43,7 @@ class ConditionParserTest {
             "10.0, true"
     })
     void mixedIntervalExclusiveLowInclusiveHigh(double value, boolean expected) {
-        DoublePredicate p = ConditionParser.parse("(1..10]");
+        DoublePredicate p = NumericConditionParser.parse("(1..10]");
         assertEquals(expected, p.test(value));
     }
 
@@ -53,7 +53,7 @@ class ConditionParserTest {
             "10.0, false"
     })
     void mixedIntervalInclusiveLowExclusiveHigh(double value, boolean expected) {
-        DoublePredicate p = ConditionParser.parse("[1..10)");
+        DoublePredicate p = NumericConditionParser.parse("[1..10)");
         assertEquals(expected, p.test(value));
     }
 
@@ -66,7 +66,7 @@ class ConditionParserTest {
             "85.1,    false"
     })
     void unboundedBelow(double value, boolean expected) {
-        DoublePredicate p = ConditionParser.parse("(..85]");
+        DoublePredicate p = NumericConditionParser.parse("(..85]");
         assertEquals(expected, p.test(value));
     }
 
@@ -77,13 +77,13 @@ class ConditionParserTest {
             "100000, true"
     })
     void unboundedAbove(double value, boolean expected) {
-        DoublePredicate p = ConditionParser.parse("[100..)");
+        DoublePredicate p = NumericConditionParser.parse("[100..)");
         assertEquals(expected, p.test(value));
     }
 
     @Test
     void fullyUnboundedMatchesEverything() {
-        DoublePredicate p = ConditionParser.parse("(..)");
+        DoublePredicate p = NumericConditionParser.parse("(..)");
         assertTrue(p.test(-1_000_000.0));
         assertTrue(p.test(0.0));
         assertTrue(p.test(1_000_000.0));
@@ -93,7 +93,7 @@ class ConditionParserTest {
 
     @Test
     void setMatchesExactValueOnly() {
-        DoublePredicate p = ConditionParser.parse("{5}");
+        DoublePredicate p = NumericConditionParser.parse("{5}");
         assertTrue(p.test(5.0));
         assertFalse(p.test(5.0001));
         assertFalse(p.test(4.9999));
@@ -101,8 +101,8 @@ class ConditionParserTest {
 
     @Test
     void setSupportsNegativeAndDecimalValues() {
-        assertTrue(ConditionParser.parse("{-3.5}").test(-3.5));
-        assertFalse(ConditionParser.parse("{-3.5}").test(3.5));
+        assertTrue(NumericConditionParser.parse("{-3.5}").test(-3.5));
+        assertFalse(NumericConditionParser.parse("{-3.5}").test(3.5));
     }
 
     @ParameterizedTest
@@ -115,13 +115,13 @@ class ConditionParserTest {
             "7,  false"
     })
     void setMatchesAnyOfMultipleValues(double value, boolean expected) {
-        DoublePredicate p = ConditionParser.parse("{2, 4, 5, 6}");
+        DoublePredicate p = NumericConditionParser.parse("{2, 4, 5, 6}");
         assertEquals(expected, p.test(value));
     }
 
     @Test
     void setWithMultipleValuesSupportsNegativesAndDecimals() {
-        DoublePredicate p = ConditionParser.parse("{-1.5, 0, 2.25}");
+        DoublePredicate p = NumericConditionParser.parse("{-1.5, 0, 2.25}");
         assertTrue(p.test(-1.5));
         assertTrue(p.test(0.0));
         assertTrue(p.test(2.25));
@@ -130,8 +130,8 @@ class ConditionParserTest {
 
     @Test
     void setIgnoresWhitespaceAroundCommas() {
-        DoublePredicate compact = ConditionParser.parse("{2,4,5,6}");
-        DoublePredicate spaced = ConditionParser.parse("{ 2 ,  4,5 ,   6 }");
+        DoublePredicate compact = NumericConditionParser.parse("{2,4,5,6}");
+        DoublePredicate spaced = NumericConditionParser.parse("{ 2 ,  4,5 ,   6 }");
         for (double v : new double[]{2, 3, 4, 5, 6, 7}) {
             assertEquals(compact.test(v), spaced.test(v), "Mismatch at value=" + v);
         }
@@ -139,7 +139,7 @@ class ConditionParserTest {
 
     @Test
     void setWithDuplicateValuesStillWorks() {
-        DoublePredicate p = ConditionParser.parse("{1, 1, 2}");
+        DoublePredicate p = NumericConditionParser.parse("{1, 1, 2}");
         assertTrue(p.test(1.0));
         assertTrue(p.test(2.0));
         assertFalse(p.test(3.0));
@@ -147,7 +147,7 @@ class ConditionParserTest {
 
     @Test
     void multiValueSetCombinesWithOtherOperators() {
-        DoublePredicate p = ConditionParser.parse("{2, 4, 6} & !{4}");
+        DoublePredicate p = NumericConditionParser.parse("{2, 4, 6} & !{4}");
         assertTrue(p.test(2.0));
         assertFalse(p.test(4.0));
         assertTrue(p.test(6.0));
@@ -156,12 +156,12 @@ class ConditionParserTest {
 
     @Test
     void emptySetThrows() {
-        assertThrows(IllegalArgumentException.class, () -> ConditionParser.parse("{}"));
+        assertThrows(IllegalArgumentException.class, () -> NumericConditionParser.parse("{}"));
     }
 
     @Test
     void trailingCommaInSetThrows() {
-        assertThrows(IllegalArgumentException.class, () -> ConditionParser.parse("{1, 2,}"));
+        assertThrows(IllegalArgumentException.class, () -> NumericConditionParser.parse("{1, 2,}"));
     }
 
 
@@ -178,7 +178,7 @@ class ConditionParserTest {
             "150, true"
     })
     void combinedExample(double value, boolean expected) {
-        DoublePredicate p = ConditionParser.parse("(..85] & !{5} | [100..)");
+        DoublePredicate p = NumericConditionParser.parse("(..85] & !{5} | [100..)");
         assertEquals(expected, p.test(value));
     }
 
@@ -186,8 +186,8 @@ class ConditionParserTest {
 
     @Test
     void whitespaceIsIgnoredEverywhere() {
-        DoublePredicate compact = ConditionParser.parse("(..85]&!{5}|[100..)");
-        DoublePredicate spaced = ConditionParser.parse(
+        DoublePredicate compact = NumericConditionParser.parse("(..85]&!{5}|[100..)");
+        DoublePredicate spaced = NumericConditionParser.parse(
                 "  ( .. 85 ]   &   ! { 5 }   |   [ 100 .. )  ");
         for (double v : new double[]{5, 50, 85, 86, 100, 150}) {
             assertEquals(compact.test(v), spaced.test(v),
@@ -199,7 +199,7 @@ class ConditionParserTest {
 
     @Test
     void negativeAndDecimalBounds() {
-        DoublePredicate p = ConditionParser.parse("[-10.5..-1.25]");
+        DoublePredicate p = NumericConditionParser.parse("[-10.5..-1.25]");
         assertTrue(p.test(-10.5));
         assertTrue(p.test(-5.0));
         assertTrue(p.test(-1.25));
@@ -211,27 +211,27 @@ class ConditionParserTest {
 
     @Test
     void unknownCharacterThrows() {
-        assertThrows(IllegalArgumentException.class, () -> ConditionParser.parse("[1..10] ^ {5}"));
+        assertThrows(IllegalArgumentException.class, () -> NumericConditionParser.parse("[1..10] ^ {5}"));
     }
 
     @Test
     void unclosedParenthesisThrows() {
-        assertThrows(IllegalArgumentException.class, () -> ConditionParser.parse("([1..10]"));
+        assertThrows(IllegalArgumentException.class, () -> NumericConditionParser.parse("([1..10]"));
     }
 
     @Test
     void trailingGarbageThrows() {
-        assertThrows(IllegalArgumentException.class, () -> ConditionParser.parse("[1..10] foo"));
+        assertThrows(IllegalArgumentException.class, () -> NumericConditionParser.parse("[1..10] foo"));
     }
 
     @Test
     void emptyExpressionThrows() {
-        assertThrows(IllegalArgumentException.class, () -> ConditionParser.parse(""));
+        assertThrows(IllegalArgumentException.class, () -> NumericConditionParser.parse(""));
     }
 
     @Test
     void danglingOperatorThrows() {
-        assertThrows(IllegalArgumentException.class, () -> ConditionParser.parse("[1..10] &"));
+        assertThrows(IllegalArgumentException.class, () -> NumericConditionParser.parse("[1..10] &"));
     }
 
 }
