@@ -30,4 +30,5 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v7
       with:
+        name: ReConfiguration
         path: build/libs/*.jar
