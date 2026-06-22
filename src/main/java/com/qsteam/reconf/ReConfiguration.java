@@ -12,8 +12,7 @@ import org.slf4j.Logger;
 @Mod(
         modid = Reference.MOD_ID,
         name = Reference.MOD_NAME,
-        version = Reference.VERSION,
-        dependencies = Reference.DEPENDENCIES
+        version = Reference.VERSION
 )
 public class ReConfiguration {
 
