@@ -1,4 +1,4 @@
-package com.qsteam.reconf.config;
+package com.qsteam.reconf.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
