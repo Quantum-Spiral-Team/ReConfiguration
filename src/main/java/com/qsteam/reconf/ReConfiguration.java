@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 )
 public class ReConfiguration {
 
-    public static final Logger LOGGER = LogUtil.getLogger(Reference.MOD_ID);
+    public static final Logger LOGGER = LogUtil.getLogger();
 
     @SidedProxy(
             modId = Reference.MOD_ID,
