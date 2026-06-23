@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
 public class ReConfLoadingPlugin implements IFMLLoadingPlugin {
 
-    private static final Logger LOGGER = LogUtil.getLogger(ReConfLoadingPlugin.class);
+    public static final Logger LOGGER = LogUtil.getLogger(ReConfLoadingPlugin.class);
 
     @Override
     public String[] getASMTransformerClass() {
