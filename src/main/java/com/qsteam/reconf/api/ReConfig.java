@@ -1,5 +1,7 @@
 package com.qsteam.reconf.api;
 
+import net.minecraftforge.fml.relauncher.Side;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,7 +29,13 @@ public @interface ReConfig
      * This is intended to be expanded upon later for more Forge controlled
      * configs.
      */
-    ReConfig.Type type() default ReConfig.Type.INSTANCE;
+    Type type() default Type.INSTANCE;
+
+    /**
+     * {@code Side.CLIENT} - {@code {name}-client.cfg}
+     * {@code Side.SERVER} - {@code {name}-server.cfg}
+     */
+    Side[] sides() default {Side.CLIENT, Side.SERVER};
 
     /**
      * Root element category, defaults to "general", if this is an empty string then the root category is disabled.
@@ -82,6 +90,7 @@ public @interface ReConfig
     @Target(ElementType.FIELD)
     @interface RangeInt
     {
+        //TODO long
         int min() default Integer.MIN_VALUE;
         int max() default Integer.MAX_VALUE;
     }
