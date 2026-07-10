@@ -52,15 +52,19 @@ public @interface ReConfig
         INSTANCE(true),
 
         /**
-         * Loaded after first call config class ({@code <clinit>}) like ConfigAnytime
-         * This class must have static fields, like {@code INSTANCE}
+         * Loaded lazily on demand, specifically during the configuration class initialization ({@code <clinit>}).
+         * <p>
+         * Emulates the behavior of {@code ConfigAnytime} without requiring a manual static initialization block.
          */
-        CORE_MOD(false), // may be renamed
+        LAZY(false), // may be renamed
 
         /**
-         * Loaded once, when world loading.
+         * Loaded dynamically when a world starts loading.
+         * <p>
+         * Isolates configuration data on a per-world basis (creating separate categories
+         * for each world save), mimicking the modern NeoForge/Forge world-scoped configuration system.
          */
-        WITH_WORLD_START(true) // may be renamed
+        PER_WORLD(true) // may be renamed
         ;
 
         private boolean isStatic = true;
