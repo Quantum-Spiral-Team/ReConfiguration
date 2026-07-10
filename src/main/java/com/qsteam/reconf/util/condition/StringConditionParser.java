@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
  * checks combined with boolean operators, into a single
  * {@link Predicate}{@code <String>} that can be evaluated against a string value.
  *
- * <p>Unlike {@link NumericConditionParser}, no interval syntax exists here —
+ * <p>Unlike {@link DoubleConditionParser}, no interval syntax exists here —
  * only set literals are supported as atomic predicates. This makes the parser
  * suitable for whitelist/blacklist config values such as biome names, item IDs,
  * dimension keys, etc.

@@ -39,14 +39,15 @@ public abstract class AbstractConditionParser<P extends Predicate<?>> {
     /**
      * Token kinds recognized by the lexer.
      *
-     * <p>{@link #INTERVAL} is produced only by {@link NumericConditionParser};
-     * it is declared here so that the shared {@link Token} record can reference
+     * <p>{@link #INTERVAL} is produced only by the numeric parsers
+     * ({@link DoubleConditionParser}, {@link LongConditionParser}); it is
+     * declared here so that the shared {@link Token} record can reference
      * it without casting.
      */
     protected enum TokenType {
         /**
          * A numeric interval literal: {@code [a..b]}, {@code (..b]}, {@code [a..)}, etc.
-         * Produced exclusively by {@link NumericConditionParser}.
+         * Produced exclusively by {@link DoubleConditionParser} and {@link LongConditionParser}.
          */
         INTERVAL,
 
@@ -82,10 +83,19 @@ public abstract class AbstractConditionParser<P extends Predicate<?>> {
      * are populated; all others are {@code null}.
      *
      * <ul>
-     *   <li>{@link TokenType#INTERVAL}: {@code value1} = lower bound,
-     *       {@code value2} = upper bound ({@code null} = open/unbounded side).</li>
-     *   <li>{@link TokenType#SET} in {@link NumericConditionParser}:
+     *   <li>{@link TokenType#INTERVAL} in {@link DoubleConditionParser}:
+     *       {@code value1} = lower bound, {@code value2} = upper bound
+     *       ({@code null} = open/unbounded side).</li>
+     *   <li>{@link TokenType#INTERVAL} in {@link LongConditionParser}:
+     *       {@code longValue1} = lower bound, {@code longValue2} = upper bound
+     *       ({@code null} = open/unbounded side). Kept as a separate boxed
+     *       {@link Long} pair (rather than reusing {@code value1}/{@code value2})
+     *       so integer bounds are never routed through a {@code double} and
+     *       risk losing precision.</li>
+     *   <li>{@link TokenType#SET} in {@link DoubleConditionParser}:
      *       {@code numericValues} = parsed {@code double} entries.</li>
+     *   <li>{@link TokenType#SET} in {@link LongConditionParser}:
+     *       {@code longValues} = parsed {@code long} entries.</li>
      *   <li>{@link TokenType#SET} in {@link StringConditionParser}:
      *       {@code stringValues} = raw (possibly case-normalized) string entries.</li>
      *   <li>All other types: only {@code type} and {@code text} are meaningful.</li>
@@ -93,7 +103,8 @@ public abstract class AbstractConditionParser<P extends Predicate<?>> {
      *
      * <p>{@code value1} and {@code value2} are boxed {@link Double} (not primitive
      * {@code double}) intentionally: {@code null} represents an absent interval
-     * bound without requiring a sentinel value.
+     * bound without requiring a sentinel value. The same reasoning applies to
+     * the boxed {@link Long} pair {@code longValue1}/{@code longValue2}.
      */
     protected record Token(
             TokenType type,
@@ -101,26 +112,39 @@ public abstract class AbstractConditionParser<P extends Predicate<?>> {
             Double value1,
             Double value2,
             double[] numericValues,
-            String[] stringValues
+            String[] stringValues,
+            Long longValue1,
+            Long longValue2,
+            long[] longValues
     ) {
         /** For operator / punctuation tokens ({@code AND}, {@code OR}, etc.). */
         Token(TokenType type, String text) {
-            this(type, text, null, null, null, null);
+            this(type, text, null, null, null, null, null, null, null);
         }
 
-        /** For {@link TokenType#INTERVAL} tokens. */
+        /** For {@link TokenType#INTERVAL} tokens in {@link DoubleConditionParser}. */
         Token(TokenType type, String text, Double value1, Double value2) {
-            this(type, text, value1, value2, null, null);
+            this(type, text, value1, value2, null, null, null, null, null);
         }
 
-        /** For {@link TokenType#SET} tokens in {@link NumericConditionParser}. */
+        /** For {@link TokenType#SET} tokens in {@link DoubleConditionParser}. */
         Token(TokenType type, String text, double[] numericValues) {
-            this(type, text, null, null, numericValues, null);
+            this(type, text, null, null, numericValues, null, null, null, null);
         }
 
         /** For {@link TokenType#SET} tokens in {@link StringConditionParser}. */
         Token(TokenType type, String text, String[] stringValues) {
-            this(type, text, null, null, null, stringValues);
+            this(type, text, null, null, null, stringValues, null, null, null);
+        }
+
+        /** For {@link TokenType#INTERVAL} tokens in {@link LongConditionParser}. */
+        Token(TokenType type, String text, Long longValue1, Long longValue2) {
+            this(type, text, null, null, null, null, longValue1, longValue2, null);
+        }
+
+        /** For {@link TokenType#SET} tokens in {@link LongConditionParser}. */
+        Token(TokenType type, String text, long[] longValues) {
+            this(type, text, null, null, null, null, null, null, longValues);
         }
     }
 
@@ -266,7 +290,7 @@ public abstract class AbstractConditionParser<P extends Predicate<?>> {
      * Splits and trims the comma-separated contents of a {@code {...}} set
      * literal and parses each entry as a {@code double}.
      *
-     * <p>Used by {@link NumericConditionParser}.
+     * <p>Used by {@link DoubleConditionParser}.
      *
      * @param inner the text between the braces, without leading/trailing whitespace
      * @return the parsed values in encounter order
@@ -283,6 +307,35 @@ public abstract class AbstractConditionParser<P extends Predicate<?>> {
                         "Empty value in set literal: {" + inner + "}");
             }
             values[i] = Double.parseDouble(trimmed);
+        }
+        return values;
+    }
+
+    /**
+     * Splits and trims the comma-separated contents of a {@code {...}} set
+     * literal and parses each entry as a {@code long}.
+     *
+     * <p>Used by {@link LongConditionParser}. Unlike {@link #parseNumericSetValues},
+     * entries are parsed directly with {@link Long#parseLong(String)} rather than
+     * via {@code double}, so values are exact across the full {@code long} range.
+     *
+     * @param inner the text between the braces, without leading/trailing whitespace
+     * @return the parsed values in encounter order
+     * @throws IllegalArgumentException if {@code inner} is empty, contains an
+     *         empty entry, or contains a value that is not a valid {@code long}
+     *         ({@link NumberFormatException} is a subclass of
+     *         {@code IllegalArgumentException})
+     */
+    protected static long[] parseLongSetValues(String inner) {
+        String[] parts = inner.split(",", -1);
+        long[] values = new long[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            String trimmed = parts[i].trim();
+            if (trimmed.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Empty value in set literal: {" + inner + "}");
+            }
+            values[i] = Long.parseLong(trimmed);
         }
         return values;
     }
