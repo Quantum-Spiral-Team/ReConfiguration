@@ -1,15 +1,26 @@
 package com.qsteam.reconf.config;
 
+import com.qsteam.reconf.api.ReConfig;
 import com.qsteam.reconf.util.LogUtil;
+import net.minecraft.world.World;
 import org.slf4j.Logger;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class ConfigManager {
 
-    public static final Set<String> CONFIG_NAMES = new HashSet<>(200);
-
     public static final Logger LOGGER = LogUtil.getLogger(ConfigManager.class);
 
+    /** for {@link ReConfig.Type#PER_WORLD} */
+    public static void sync(String modId, World world) {
+        //TODO
+    }
+
+    /** for {@link ReConfig.Type#INSTANCE} */
+    public static void sync(String modId, ReConfig.Type type) {
+        //TODO
+    }
+
+    /** for {@link ReConfig.Type#LAZY} */
+    public static void sync(Class<?> clazz) {
+        //TODO
+    }
 }
