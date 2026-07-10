@@ -16,17 +16,15 @@ Resolve these before/while implementing the relevant section — they change the
 
 ## 1. Core Data Model & Type System
 
-- [ ] Replace the closed primitive-only `Property` model with an open `ConfigValue<T>` abstraction
-  - [ ] Keep dedicated unboxed specializations for hot primitives (int/long/double/boolean/String) — same instinct as the old `PropInt`/`PropBoolean` split, just unified under one extensible mechanism instead of a hardcoded switch
-  - [ ] Route everything else (custom types, collections) through a generic adapter path
+- [ ] **ConfigProperty** — open property system (replacing a closed `Property` model)
+  - [x] Primitives (`byte`, `short`, `int`, `long`, `float`, `double`, `boolean`)
+  - [x] Primitive arrays (`byte[]`, `short[]`, `int[]`, `long[]`, `float[]`, `double[]`, `boolean[]`)
+  - [x] Objects (WIP see `ObjectConfigProperty` and `PropertyUtils#serialize`/`PropertyUtils#deserialize`)
+  - [ ] Object arrays
+  - [ ] Category (nested config objects)
+  - [ ] Collections framework / Maps
+  - [ ] Native FastUtil collection/map support
 - [ ] Design a `TypeAdapter`/codec registry for custom type support (external interface — third-party mods can register their own types)
-  - [ ] Resolution must prefer an exact/more-specific registered type over a generic fallback (e.g. a registered `IntArrayList` adapter must win over a generic boxed `List<T>` adapter)
-- [ ] Generic `List<T>` / `Map<K,V>` / `Set<T>` support built by composing element adapters, not bespoke per-collection-type code
-- [ ] Native FastUtil collection/map support
-  - [ ] Store primitive values internally as plain primitive arrays (e.g. `int[]`)
-  - [ ] On exposure, reflectively materialize whatever concrete FastUtil type the field declares, instead of always producing one fixed type
-  - [ ] For legacy/boxed consumers (`List<Integer>`, `Map<Integer, V>`), hand back the same FastUtil instance upcast to the standard interface — FastUtil types already implement `java.util.List`/`Map`, so this is free; avoid copying whenever the source is already FastUtil-backed
-  - [ ] Reserve the copy path for the one case it's actually needed: bridging an externally-supplied boxed collection into a FastUtil-backed field
 - [ ] Document boxing boundaries explicitly: boxing is acceptable on cold paths (load/save/GUI), never on hot runtime field access
 
 ## 2. File Format & I/O
@@ -60,8 +58,8 @@ Resolve these before/while implementing the relevant section — they change the
 - [ ] Replace the rigid `Config.Type.INSTANCE`-only enum with an extensible trigger abstraction (interface/strategy), not a growing enum
 - [ ] Port the three load triggers already scoped by `ReConfig.Type`:
   - [ ] `INSTANCE` — loaded once right after mod construction, before pre-init (static fields)
-  - [ ] class-touch trigger — loaded on first access to the config class (`<clinit>`), equivalent to `ReConfig.Type.CORE_MOD` / the old ConfigAnytime pattern, but without requiring the developer to manually write a static-block load call
-  - [ ] world-join trigger — loaded once on world load (`ReConfig.Type.WITH_WORLD_START`), matching newer-MC-version behavior
+  - [x] class-touch trigger — loaded on first access to the config class (`<clinit>`), equivalent to `ReConfig.Type.LAZY` / the old ConfigAnytime pattern, but without requiring the developer to manually write a static-block load call
+  - [ ] world-join trigger — loaded once on world load (`ReConfig.Type.PER_WORLD`), matching newer-MC-version behavior
 - [ ] Leave the abstraction open for future trigger types without breaking existing ones
 
 ## 4. Backward-Compatible Facade
@@ -74,6 +72,7 @@ Resolve these before/while implementing the relevant section — they change the
 
 ## 5. New Annotation Set (ReConfig-inspired)
 
+- [ ] Add sides support to `ReConfig` annotation (`Side.CLIENT` / `Side.SERVER`)
 - [ ] Port type-level options from `ReConfig`: `modid`, `name` (defaults to modid), `dir`, `type` (lifecycle trigger from §3), `category` (root category name; empty string disables the root category)
 - [ ] Port field-level annotations: `@LangKey`, `@Comment`, `@Ignore`, `@RangeInt`, `@RangeDouble`, `@Range(String)`, `@Name`, `@RequiresMcRestart`, `@RequiresWorldRestart`, `@SlidingOption`
 - [ ] Resolve namespace/placement relative to the existing `@Config` annotations (§0)
