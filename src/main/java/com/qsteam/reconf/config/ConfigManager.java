@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class ConfigManager {
 
-    public static final Set<String> CONFIG_NAMES = new HashSet<>();
+    public static final Set<String> CONFIG_NAMES = new HashSet<>(200);
 
     public static final Logger LOGGER = LogUtil.getLogger(ConfigManager.class);
 
