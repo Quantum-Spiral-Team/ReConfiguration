@@ -94,9 +94,8 @@ public @interface ReConfig
     @Target(ElementType.FIELD)
     @interface RangeInt
     {
-        //TODO long
-        int min() default Integer.MIN_VALUE;
-        int max() default Integer.MAX_VALUE;
+        long min() default Long.MIN_VALUE;
+        long max() default Long.MAX_VALUE;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
