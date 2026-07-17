@@ -5,14 +5,12 @@ import com.qsteam.reconf.config.ConfigManager;
 import it.unimi.dsi.fastutil.doubles.DoublePredicate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 public class FloatConfigProperty extends ConfigProperty {
 
     private volatile float value;
     private final @Nullable DoublePredicate validator;
 
-    public FloatConfigProperty(String name, List<String> comments, float defaultValue, @Nullable DoublePredicate validator) {
+    public FloatConfigProperty(String name, String[] comments, float defaultValue, @Nullable DoublePredicate validator) {
         super(name, comments, float.class);
         this.value = defaultValue;
         this.validator = validator;

@@ -1,19 +1,18 @@
-package com.qsteam.reconf.api.property.array;
+package com.qsteam.reconf.api.property.primitivearray;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
+import com.qsteam.reconf.util.property.ArrayValidators;
 import it.unimi.dsi.fastutil.longs.LongPredicate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+public class IntArrayConfigProperty extends ConfigProperty {
 
-public class ShortArrayConfigProperty extends ConfigProperty {
-
-    private volatile short[] value;
+    private volatile int[] value;
     private final @Nullable LongPredicate validator;
 
-    public ShortArrayConfigProperty(String name, List<String> comments, short[] defaultValue, @Nullable LongPredicate validator) {
-        super(name, comments, short[].class);
+    public IntArrayConfigProperty(String name, String[] comments, int[] defaultValue, @Nullable LongPredicate validator) {
+        super(name, comments, int[].class);
         this.value = defaultValue;
         this.validator = validator;
 
@@ -22,12 +21,12 @@ public class ShortArrayConfigProperty extends ConfigProperty {
         }
     }
 
-    public short[] getShortArray() {
+    public int[] getIntArray() {
         return this.value;
     }
 
-    public boolean setShortArray(short[] value) {
-        if (this.testAll(value)) {
+    public boolean setIntArray(int[] value) {
+        if (ArrayValidators.testAll(value, this.validator)) {
             this.value = value;
             return true;
         } else {
@@ -38,18 +37,7 @@ public class ShortArrayConfigProperty extends ConfigProperty {
 
     @Override
     public boolean isValid() {
-        return this.testAll(this.value);
-    }
-
-    private boolean testAll(short[] value) {
-        if (this.validator == null) return true;
-
-        for (short i : value) {
-            if (!this.validator.test(i)) {
-                return false;
-            }
-        }
-        return true;
+        return ArrayValidators.testAll(this.value, this.validator);
     }
 
 }

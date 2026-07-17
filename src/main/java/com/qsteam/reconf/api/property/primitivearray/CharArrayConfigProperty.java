@@ -1,17 +1,16 @@
-package com.qsteam.reconf.api.property.array;
+package com.qsteam.reconf.api.property.primitivearray;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
-
-import java.util.List;
-import java.util.function.Predicate;
+import com.qsteam.reconf.util.property.ArrayValidators;
+import it.unimi.dsi.fastutil.longs.LongPredicate;
 
 public class CharArrayConfigProperty extends ConfigProperty {
 
     private char[] value;
-    private final Predicate<String> validator;
+    private final LongPredicate validator;
 
-    protected CharArrayConfigProperty(String name, List<String> comments, char[] defaultValue, Predicate<String> validator) {
+    protected CharArrayConfigProperty(String name, String[] comments, char[] defaultValue, LongPredicate validator) {
         super(name, comments, char.class);
         this.value = defaultValue;
         this.validator = validator;
@@ -26,7 +25,7 @@ public class CharArrayConfigProperty extends ConfigProperty {
     }
 
     public boolean setCharArray(char[] value) {
-        if (this.testAll(value)) {
+        if (ArrayValidators.testAll(value, this.validator)) {
             this.value = value;
             return true;
         } else {
@@ -37,17 +36,6 @@ public class CharArrayConfigProperty extends ConfigProperty {
 
     @Override
     public boolean isValid() {
-        return this.testAll(this.value);
-    }
-
-    private boolean testAll(char[] value) {
-        if (this.validator == null) return true;
-
-        for (char i : value) {
-            if (!this.validator.test("" + i)) {
-                return false;
-            }
-        }
-        return true;
+        return ArrayValidators.testAll(this.value, this.validator);
     }
 }

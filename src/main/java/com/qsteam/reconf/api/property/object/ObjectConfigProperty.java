@@ -1,18 +1,18 @@
-package com.qsteam.reconf.api.property;
+package com.qsteam.reconf.api.property.object;
 
+import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
-import com.qsteam.reconf.util.PropertyUtils;
+import com.qsteam.reconf.util.property.PropertyUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 public class ObjectConfigProperty<T> extends ConfigProperty {
 
-    private volatile T value;
-    private final @Nullable Predicate<String> validator;
+    protected volatile T value;
+    protected final @Nullable Predicate<String> validator;
 
-    public ObjectConfigProperty(String name, List<String> comments, Class<?> type, T defaultValue, @Nullable Predicate<String> validator) {
+    public ObjectConfigProperty(String name, String[] comments, Class<?> type, T defaultValue, @Nullable Predicate<String> validator) {
         super(name, comments, type);
         this.value = defaultValue;
         this.validator = validator;

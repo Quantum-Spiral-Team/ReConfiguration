@@ -2,17 +2,15 @@ package com.qsteam.reconf.api.property.primitive;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
+import it.unimi.dsi.fastutil.longs.LongPredicate;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.function.Predicate;
 
 public class CharConfigProperty extends ConfigProperty {
 
     private char value;
-    private final @Nullable Predicate<String> validator;
+    private final @Nullable LongPredicate validator;
 
-    public CharConfigProperty(String name, List<String> comments, char defaultValue, @Nullable Predicate<String> validator) {
+    public CharConfigProperty(String name, String[] comments, char defaultValue, @Nullable LongPredicate validator) {
         super(name, comments, char.class);
         this.value = defaultValue;
         this.validator = validator;
@@ -23,7 +21,7 @@ public class CharConfigProperty extends ConfigProperty {
     }
 
     public boolean setChar(char value) {
-        if (validator == null || validator.test("" + value)) {
+        if (validator == null || validator.test(value)) {
             this.value = value;
             return true;
         } else {
@@ -38,7 +36,7 @@ public class CharConfigProperty extends ConfigProperty {
 
     @Override
     public boolean isValid() {
-        return validator == null || validator.test("" + this.value);
+        return validator == null || validator.test(this.value);
     }
 
 }

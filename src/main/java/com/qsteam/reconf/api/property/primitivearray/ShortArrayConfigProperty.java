@@ -1,19 +1,18 @@
-package com.qsteam.reconf.api.property.array;
+package com.qsteam.reconf.api.property.primitivearray;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
+import com.qsteam.reconf.util.property.ArrayValidators;
 import it.unimi.dsi.fastutil.longs.LongPredicate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+public class ShortArrayConfigProperty extends ConfigProperty {
 
-public class LongArrayConfigProperty extends ConfigProperty {
-
-    private volatile long[] value;
+    private volatile short[] value;
     private final @Nullable LongPredicate validator;
 
-    public LongArrayConfigProperty(String name, List<String> comments, long[] defaultValue, @Nullable LongPredicate validator) {
-        super(name, comments, long[].class);
+    public ShortArrayConfigProperty(String name, String[] comments, short[] defaultValue, @Nullable LongPredicate validator) {
+        super(name, comments, short[].class);
         this.value = defaultValue;
         this.validator = validator;
 
@@ -22,12 +21,12 @@ public class LongArrayConfigProperty extends ConfigProperty {
         }
     }
 
-    public long[] getLongArray() {
+    public short[] getShortArray() {
         return this.value;
     }
 
-    public boolean setLongArray(long[] value) {
-        if (this.testAll(value)) {
+    public boolean setShortArray(short[] value) {
+        if (ArrayValidators.testAll(value, this.validator)) {
             this.value = value;
             return true;
         } else {
@@ -38,18 +37,7 @@ public class LongArrayConfigProperty extends ConfigProperty {
 
     @Override
     public boolean isValid() {
-        return this.testAll(this.value);
-    }
-
-    private boolean testAll(long[] value) {
-        if (this.validator == null) return true;
-
-        for (long i : value) {
-            if (!this.validator.test(i)) {
-                return false;
-            }
-        }
-        return true;
+        return ArrayValidators.testAll(this.value, this.validator);
     }
 
 }

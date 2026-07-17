@@ -1,14 +1,12 @@
 package com.qsteam.reconf.api.property;
 
-import java.util.List;
-
 public abstract class ConfigProperty {
 
     private final String name;
-    private final List<String> comments;
+    private final String[] comments;
     private final Class<?> type;
 
-    protected ConfigProperty(String name, List<String> comments, Class<?> type) {
+    protected ConfigProperty(String name, String[] comments, Class<?> type) {
         this.name = name;
         this.comments = comments;
         this.type = type;
@@ -20,7 +18,7 @@ public abstract class ConfigProperty {
         return this.name;
     }
 
-    public List<String> getComments() {
+    public String[] getComments() {
         return this.comments;
     }
 

@@ -5,14 +5,12 @@ import com.qsteam.reconf.config.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongPredicate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 public class IntConfigProperty extends ConfigProperty {
 
     private volatile int value;
     private final @Nullable LongPredicate validator;
 
-    public IntConfigProperty(String name, List<String> comments, int defaultValue, @Nullable LongPredicate validator) {
+    public IntConfigProperty(String name, String[] comments, int defaultValue, @Nullable LongPredicate validator) {
         super(name, comments, int.class);
         this.value = defaultValue;
         this.validator = validator;

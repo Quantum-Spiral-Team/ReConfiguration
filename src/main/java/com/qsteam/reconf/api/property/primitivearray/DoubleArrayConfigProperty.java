@@ -1,18 +1,17 @@
-package com.qsteam.reconf.api.property.array;
+package com.qsteam.reconf.api.property.primitivearray;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
+import com.qsteam.reconf.util.property.ArrayValidators;
 import it.unimi.dsi.fastutil.doubles.DoublePredicate;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class DoubleArrayConfigProperty extends ConfigProperty {
 
     private volatile double[] value;
     private final @Nullable DoublePredicate validator;
 
-    public DoubleArrayConfigProperty(String name, List<String> comments, double[] defaultValue, @Nullable DoublePredicate validator) {
+    public DoubleArrayConfigProperty(String name, String[] comments, double[] defaultValue, @Nullable DoublePredicate validator) {
         super(name, comments, double[].class);
         this.value = defaultValue;
         this.validator = validator;
@@ -27,7 +26,7 @@ public class DoubleArrayConfigProperty extends ConfigProperty {
     }
 
     public boolean setDoubleArray(double[] value) {
-        if (this.testAll(value)) {
+        if (ArrayValidators.testAll(value, this.validator)) {
             this.value = value;
             return true;
         } else {
@@ -38,18 +37,7 @@ public class DoubleArrayConfigProperty extends ConfigProperty {
 
     @Override
     public boolean isValid() {
-        return this.testAll(this.value);
-    }
-
-    private boolean testAll(double[] value) {
-        if (this.validator == null) return true;
-
-        for (double i : value) {
-            if (!this.validator.test(i)) {
-                return false;
-            }
-        }
-        return true;
+        return ArrayValidators.testAll(this.value, this.validator);
     }
 
 }

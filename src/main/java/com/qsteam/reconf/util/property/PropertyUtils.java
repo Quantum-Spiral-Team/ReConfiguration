@@ -1,4 +1,4 @@
-package com.qsteam.reconf.util;
+package com.qsteam.reconf.util.property;
 
 public class PropertyUtils {
 
