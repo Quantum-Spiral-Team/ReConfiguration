@@ -9,8 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface ReConfig
-{
+public @interface ReConfig {
     /**
      * The mod id that this configuration is associated with.
      */
@@ -43,8 +42,7 @@ public @interface ReConfig
      */
     String category() default "general";
 
-    enum Type
-    {
+    enum Type {
         /**
          * Loaded once, directly after mod construction. Before pre-init.
          * This class must have static fields.
@@ -56,7 +54,7 @@ public @interface ReConfig
          * <p>
          * Emulates the behavior of {@code ConfigAnytime} without requiring a manual static initialization block.
          */
-        LAZY(false), // may be renamed
+        LAZY(true),
 
         /**
          * Loaded dynamically when a world starts loading.
@@ -64,25 +62,29 @@ public @interface ReConfig
          * Isolates configuration data on a per-world basis (creating separate categories
          * for each world save), mimicking the modern NeoForge/Forge world-scoped configuration system.
          */
-        PER_WORLD(true) // may be renamed
+        PER_WORLD(true),
         ;
 
         private boolean isStatic = true;
-        Type(boolean isStatic) { this.isStatic = isStatic; }
-        public boolean isStatic(){ return this.isStatic; }
+
+        Type(boolean isStatic) {
+            this.isStatic = isStatic;
+        }
+
+        public boolean isStatic() {
+            return this.isStatic;
+        }
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE})
-    @interface LangKey
-    {
+    @interface LangKey {
         String value();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    @interface Comment
-    {
+    @interface Comment {
         String[] value();
     }
 
@@ -92,16 +94,14 @@ public @interface ReConfig
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    @interface RangeInt
-    {
+    @interface RangeInt {
         long min() default Long.MIN_VALUE;
         long max() default Long.MAX_VALUE;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    @interface RangeDouble
-    {
+    @interface RangeDouble {
         double min() default -Double.MAX_VALUE;
         double max() default Double.MAX_VALUE;
     }
@@ -115,8 +115,7 @@ public @interface ReConfig
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    @interface Name
-    {
+    @interface Name {
         String value();
     }
 
