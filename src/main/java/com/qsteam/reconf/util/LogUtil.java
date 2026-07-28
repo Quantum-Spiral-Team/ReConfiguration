@@ -19,14 +19,14 @@ public class LogUtil {
     }
 
     public static Logger getLogger(String name, String name2) {
-        return getLogger(name + "/" +  name2);
+        return getLogger(name + "/" + name2);
     }
 
     public static Logger getLogger(String name) {
         return LoggerFactory.getLogger(Reference.MOD_NAME + "/" + name);
     }
 
-    public static Logger getLogger() {
+    public static Logger getModLogger() {
         return LoggerFactory.getLogger(Reference.MOD_NAME);
     }
 
