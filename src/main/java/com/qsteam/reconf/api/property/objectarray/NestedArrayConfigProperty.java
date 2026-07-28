@@ -3,7 +3,6 @@ package com.qsteam.reconf.api.property.objectarray;
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
 import com.qsteam.reconf.util.property.ArrayTypeInspector;
-import com.qsteam.reconf.util.property.ArrayValidators;
 import com.qsteam.reconf.util.property.PropertyUtils;
 import it.unimi.dsi.fastutil.doubles.DoublePredicate;
 import it.unimi.dsi.fastutil.longs.LongPredicate;
