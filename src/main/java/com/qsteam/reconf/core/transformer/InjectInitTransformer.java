@@ -88,7 +88,7 @@ public class InjectInitTransformer implements IClassTransformer {
         InsnList inject = new InsnList();
         inject.add(new LdcInsnNode(Type.getObjectType(node.name)));
         inject.add(new MethodInsnNode(INVOKESTATIC,
-                "com/qsteam/reconf/config/ConfigManager", "sync",
+                "com/qsteam/reconf/config/ConfigManager", "register",
                 "(Ljava/lang/Class;)V", false
         ));
 
