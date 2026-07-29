@@ -24,7 +24,7 @@ public class StringConfigProperty extends ObjectConfigProperty<String> {
 
     @Override
     public boolean isValid() {
-        return validator != null && validator.test(this.value);
+        return validator != null && validator.test(this.defaultValue);
     }
 
 }

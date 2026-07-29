@@ -1,4 +1,4 @@
-package com.qsteam.reconf.api.property.primitive;
+package com.qsteam.reconf.api.property.object;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
@@ -7,11 +7,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class DoubleConfigProperty extends ConfigProperty {
 
+    private final double defaultValue;
     private volatile double value;
     private final @Nullable DoublePredicate validator;
 
     public DoubleConfigProperty(String name, String[] comments, double defaultValue, @Nullable DoublePredicate validator) {
         super(name, comments, double.class);
+        this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.validator = validator;
 
@@ -34,9 +36,17 @@ public class DoubleConfigProperty extends ConfigProperty {
         }
     }
 
+    public double getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public void resetToDefault() {
+        this.value = defaultValue;
+    }
+
     @Override
     public boolean isValid() {
-        return validator == null || validator.test(this.value);
+        return validator == null || validator.test(this.defaultValue);
     }
 
 }

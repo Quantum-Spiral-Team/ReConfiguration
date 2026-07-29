@@ -9,11 +9,13 @@ import java.util.function.Predicate;
 
 public class ObjectConfigProperty<T> extends ConfigProperty {
 
+    protected final T defaultValue;
     protected volatile T value;
     protected final @Nullable Predicate<String> validator;
 
     public ObjectConfigProperty(String name, String[] comments, Class<?> type, T defaultValue, @Nullable Predicate<String> validator) {
         super(name, comments, type);
+        this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.validator = validator;
 
@@ -36,9 +38,17 @@ public class ObjectConfigProperty<T> extends ConfigProperty {
         }
     }
 
+    public T getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public void resetToDefault() {
+        this.value = this.defaultValue;
+    }
+
     @Override
     public boolean isValid() {
-        return validator == null || validator.test(PropertyUtils.serialize(this.value));
+        return this.validator == null || this.validator.test(PropertyUtils.serialize(this.defaultValue));
     }
 
 }

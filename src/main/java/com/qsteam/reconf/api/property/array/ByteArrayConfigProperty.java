@@ -1,4 +1,4 @@
-package com.qsteam.reconf.api.property.primitivearray;
+package com.qsteam.reconf.api.property.array;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
@@ -6,13 +6,15 @@ import com.qsteam.reconf.util.property.ArrayValidators;
 import it.unimi.dsi.fastutil.longs.LongPredicate;
 import org.jetbrains.annotations.Nullable;
 
-public class IntArrayConfigProperty extends ConfigProperty {
+public class ByteArrayConfigProperty extends ConfigProperty {
 
-    private volatile int[] value;
+    private final byte[] defaultValue;
+    private volatile byte[] value;
     private final @Nullable LongPredicate validator;
 
-    public IntArrayConfigProperty(String name, String[] comments, int[] defaultValue, @Nullable LongPredicate validator) {
-        super(name, comments, int[].class);
+    public ByteArrayConfigProperty(String name, String[] comments, byte[] defaultValue, @Nullable LongPredicate validator) {
+        super(name, comments, byte[].class);
+        this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.validator = validator;
 
@@ -21,11 +23,11 @@ public class IntArrayConfigProperty extends ConfigProperty {
         }
     }
 
-    public int[] getIntArray() {
+    public byte[] getByteArray() {
         return this.value;
     }
 
-    public boolean setIntArray(int[] value) {
+    public boolean setByteArray(byte[] value) {
         if (ArrayValidators.testAll(value, this.validator)) {
             this.value = value;
             return true;
@@ -35,9 +37,17 @@ public class IntArrayConfigProperty extends ConfigProperty {
         }
     }
 
+    public byte[] getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public void resetToDefault() {
+        this.value = defaultValue;
+    }
+
     @Override
     public boolean isValid() {
-        return ArrayValidators.testAll(this.value, this.validator);
+        return ArrayValidators.testAll(this.defaultValue, this.validator);
     }
 
 }

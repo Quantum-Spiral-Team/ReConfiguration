@@ -1,4 +1,4 @@
-package com.qsteam.reconf.api.property.objectarray;
+package com.qsteam.reconf.api.property.array;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 public class NestedArrayConfigProperty extends ConfigProperty {
 
+    private final Object defaultValue;
     private volatile Object value;
     private final int depth;
     private final Class<?> leafType;
@@ -30,6 +31,7 @@ public class NestedArrayConfigProperty extends ConfigProperty {
 
         this.depth = ArrayTypeInspector.depth(arrayType);
         this.leafType = ArrayTypeInspector.leafType(arrayType);
+        this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.validator = validator;
         this.doubleValidator = doubleValidator;
@@ -54,9 +56,17 @@ public class NestedArrayConfigProperty extends ConfigProperty {
         }
     }
 
+    public Object getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public void resetToDefault() {
+        this.value = this.defaultValue;
+    }
+
     @Override
     public boolean isValid() {
-        return validateRecursive(this.value, this.depth);
+        return validateRecursive(this.defaultValue, this.depth);
     }
 
     private boolean validateRecursive(Object array, int remainingDepth ) {

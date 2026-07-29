@@ -1,4 +1,4 @@
-package com.qsteam.reconf.api.property.primitivearray;
+package com.qsteam.reconf.api.property.array;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
@@ -7,11 +7,13 @@ import it.unimi.dsi.fastutil.chars.CharPredicate;
 
 public class CharArrayConfigProperty extends ConfigProperty {
 
+    private final char[] defaultValue;
     private char[] value;
     private final CharPredicate validator;
 
     protected CharArrayConfigProperty(String name, String[] comments, char[] defaultValue, CharPredicate validator) {
         super(name, comments, char.class);
+        this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.validator = validator;
 
@@ -34,8 +36,16 @@ public class CharArrayConfigProperty extends ConfigProperty {
         }
     }
 
+    public char[] getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public void resetToDefault() {
+        this.value = defaultValue;
+    }
+
     @Override
     public boolean isValid() {
-        return ArrayValidators.testAll(this.value, this.validator);
+        return ArrayValidators.testAll(this.defaultValue, this.validator);
     }
 }

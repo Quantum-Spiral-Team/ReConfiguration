@@ -1,4 +1,4 @@
-package com.qsteam.reconf.api.property.primitive;
+package com.qsteam.reconf.api.property.object;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
@@ -7,11 +7,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class FloatConfigProperty extends ConfigProperty {
 
+    private final float defaultValue;
     private volatile float value;
     private final @Nullable DoublePredicate validator;
 
     public FloatConfigProperty(String name, String[] comments, float defaultValue, @Nullable DoublePredicate validator) {
         super(name, comments, float.class);
+        this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.validator = validator;
 
@@ -34,9 +36,17 @@ public class FloatConfigProperty extends ConfigProperty {
         }
     }
 
+    public float getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public void resetToDefault() {
+        this.value = defaultValue;
+    }
+
     @Override
     public boolean isValid() {
-        return validator == null || validator.test(this.value);
+        return validator == null || validator.test(this.defaultValue);
     }
 
 }

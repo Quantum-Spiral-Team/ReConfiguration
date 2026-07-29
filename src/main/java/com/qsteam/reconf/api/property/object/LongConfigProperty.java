@@ -1,17 +1,19 @@
-package com.qsteam.reconf.api.property.primitive;
+package com.qsteam.reconf.api.property.object;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongPredicate;
 import org.jetbrains.annotations.Nullable;
 
-public class IntConfigProperty extends ConfigProperty {
+public class LongConfigProperty extends ConfigProperty {
 
-    private volatile int value;
+    private final long defaultValue;
+    private volatile long value;
     private final @Nullable LongPredicate validator;
 
-    public IntConfigProperty(String name, String[] comments, int defaultValue, @Nullable LongPredicate validator) {
-        super(name, comments, int.class);
+    public LongConfigProperty(String name, String[] comments, long defaultValue, @Nullable LongPredicate validator) {
+        super(name, comments, long.class);
+        this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.validator = validator;
 
@@ -20,11 +22,11 @@ public class IntConfigProperty extends ConfigProperty {
         }
     }
 
-    public int getInt() {
+    public long getLong() {
         return this.value;
     }
 
-    public boolean setInt(int value) {
+    public boolean setLong(long value) {
         if (validator == null || validator.test(value)) {
             this.value = value;
             return true;
@@ -34,9 +36,17 @@ public class IntConfigProperty extends ConfigProperty {
         }
     }
 
+    public long getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public void resetToDefault() {
+        this.value = defaultValue;
+    }
+
     @Override
     public boolean isValid() {
-        return validator == null || validator.test(this.value);
+        return validator == null || validator.test(this.defaultValue);
     }
 
 }

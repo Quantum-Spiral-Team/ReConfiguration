@@ -1,4 +1,4 @@
-package com.qsteam.reconf.api.property.primitivearray;
+package com.qsteam.reconf.api.property.array;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
@@ -6,13 +6,15 @@ import com.qsteam.reconf.util.property.ArrayValidators;
 import it.unimi.dsi.fastutil.doubles.DoublePredicate;
 import org.jetbrains.annotations.Nullable;
 
-public class DoubleArrayConfigProperty extends ConfigProperty {
+public class FloatArrayConfigProperty extends ConfigProperty {
 
-    private volatile double[] value;
+    private final float[] defaultValue;
+    private volatile float[] value;
     private final @Nullable DoublePredicate validator;
 
-    public DoubleArrayConfigProperty(String name, String[] comments, double[] defaultValue, @Nullable DoublePredicate validator) {
-        super(name, comments, double[].class);
+    public FloatArrayConfigProperty(String name, String[] comments, float[] defaultValue, @Nullable DoublePredicate validator) {
+        super(name, comments, float[].class);
+        this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.validator = validator;
 
@@ -21,11 +23,11 @@ public class DoubleArrayConfigProperty extends ConfigProperty {
         }
     }
 
-    public double[] getDoubleArray() {
+    public float[] getFloatArray() {
         return this.value;
     }
 
-    public boolean setDoubleArray(double[] value) {
+    public boolean setFloatArray(float[] value) {
         if (ArrayValidators.testAll(value, this.validator)) {
             this.value = value;
             return true;
@@ -35,9 +37,17 @@ public class DoubleArrayConfigProperty extends ConfigProperty {
         }
     }
 
+    public float[] getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public void resetToDefault() {
+        this.value = this.defaultValue;
+    }
+
     @Override
     public boolean isValid() {
-        return ArrayValidators.testAll(this.value, this.validator);
+        return ArrayValidators.testAll(this.defaultValue, this.validator);
     }
 
 }

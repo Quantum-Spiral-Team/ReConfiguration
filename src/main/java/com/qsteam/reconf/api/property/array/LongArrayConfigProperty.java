@@ -1,4 +1,4 @@
-package com.qsteam.reconf.api.property.primitivearray;
+package com.qsteam.reconf.api.property.array;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
@@ -8,11 +8,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class LongArrayConfigProperty extends ConfigProperty {
 
+    private final long[] defaultValue;
     private volatile long[] value;
     private final @Nullable LongPredicate validator;
 
     public LongArrayConfigProperty(String name, String[] comments, long[] defaultValue, @Nullable LongPredicate validator) {
         super(name, comments, long[].class);
+        this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.validator = validator;
 
@@ -35,9 +37,17 @@ public class LongArrayConfigProperty extends ConfigProperty {
         }
     }
 
+    public long[] getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void resetToDefault() {
+        this.value = this.defaultValue;
+    }
+
     @Override
     public boolean isValid() {
-        return ArrayValidators.testAll(this.value, this.validator);
+        return ArrayValidators.testAll(this.defaultValue, this.validator);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.qsteam.reconf.api.property.objectarray;
+package com.qsteam.reconf.api.property.array;
 
 import com.qsteam.reconf.api.property.object.ObjectConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
@@ -35,7 +35,7 @@ public class StringArrayConfigProperty extends ObjectConfigProperty<String[]> {
 
     @Override
     public boolean isValid() {
-        return ArrayValidators.testAll(this.value, this.validator);
+        return ArrayValidators.testAll(this.defaultValue, this.validator);
     }
 
 }
