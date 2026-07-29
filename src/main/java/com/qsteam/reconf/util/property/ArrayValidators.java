@@ -1,5 +1,6 @@
 package com.qsteam.reconf.util.property;
 
+import it.unimi.dsi.fastutil.chars.CharPredicate;
 import it.unimi.dsi.fastutil.doubles.DoublePredicate;
 import it.unimi.dsi.fastutil.longs.LongPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -21,12 +22,6 @@ public class ArrayValidators {
     public static boolean testAll(short[] shorts, @Nullable LongPredicate validator) {
         if (validator == null) return true;
         for (short value : shorts) if (!validator.test(value)) return false;
-        return true;
-    }
-
-    public static boolean testAll(char[] chars, @Nullable LongPredicate validator) {
-        if (validator == null) return true;
-        for (char value : chars) if (!validator.test(value)) return false;
         return true;
     }
 
@@ -55,6 +50,12 @@ public class ArrayValidators {
         return true;
     }
 
+    public static boolean testAll(char[] chars, @Nullable CharPredicate validator) {
+        if (validator == null) return true;
+        for (char value : chars) if (!validator.test(value)) return false;
+        return true;
+    }
+
     public static boolean testAll(String[] strings, @Nullable Predicate<String> validator) {
         if (validator == null) return true;
         for (String value : strings) if (!validator.test(value)) return false;
@@ -69,7 +70,7 @@ public class ArrayValidators {
 
     // ==== Lifts ====
 
-    public static Predicate<char[]> liftChar(@Nullable LongPredicate validator) {
+    public static Predicate<char[]> liftChar(@Nullable CharPredicate validator) {
         return array -> testAll(array, validator);
     }
 

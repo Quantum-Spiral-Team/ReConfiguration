@@ -2,15 +2,15 @@ package com.qsteam.reconf.api.property.primitive;
 
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
-import it.unimi.dsi.fastutil.longs.LongPredicate;
+import it.unimi.dsi.fastutil.chars.CharPredicate;
 import org.jetbrains.annotations.Nullable;
 
 public class CharConfigProperty extends ConfigProperty {
 
     private char value;
-    private final @Nullable LongPredicate validator;
+    private final @Nullable CharPredicate validator;
 
-    public CharConfigProperty(String name, String[] comments, char defaultValue, @Nullable LongPredicate validator) {
+    public CharConfigProperty(String name, String[] comments, char defaultValue, @Nullable CharPredicate validator) {
         super(name, comments, char.class);
         this.value = defaultValue;
         this.validator = validator;

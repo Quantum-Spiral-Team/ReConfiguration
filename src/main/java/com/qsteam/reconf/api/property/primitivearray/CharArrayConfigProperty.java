@@ -3,14 +3,14 @@ package com.qsteam.reconf.api.property.primitivearray;
 import com.qsteam.reconf.api.property.ConfigProperty;
 import com.qsteam.reconf.config.ConfigManager;
 import com.qsteam.reconf.util.property.ArrayValidators;
-import it.unimi.dsi.fastutil.longs.LongPredicate;
+import it.unimi.dsi.fastutil.chars.CharPredicate;
 
 public class CharArrayConfigProperty extends ConfigProperty {
 
     private char[] value;
-    private final LongPredicate validator;
+    private final CharPredicate validator;
 
-    protected CharArrayConfigProperty(String name, String[] comments, char[] defaultValue, LongPredicate validator) {
+    protected CharArrayConfigProperty(String name, String[] comments, char[] defaultValue, CharPredicate validator) {
         super(name, comments, char.class);
         this.value = defaultValue;
         this.validator = validator;

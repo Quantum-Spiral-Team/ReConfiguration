@@ -2,7 +2,7 @@ package com.qsteam.reconf.util.property;
 
 public class ArrayTypeInspector {
 
-    private  ArrayTypeInspector() {}
+    private ArrayTypeInspector() {}
 
     public static int depth(Class<?> type) {
         int d = 0;
